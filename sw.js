@@ -1,3 +1,4 @@
+const fallbackPath = '/pages/fallback.html';
 const staticCacheName = "site-static-v2";
 const dynamicCache = "site-dynamic-v1";
 const assets = [
@@ -11,6 +12,7 @@ const assets = [
     "/img/dish.png",
     "https://fonts.googleapis.com/icon?family=Material+Icons",
     "https://fonts.gstatic.com/s/materialicons/v111/flUhRq6tzZclQEJ-Vdg-IuiaDsNcIhQ8tQ.woff2",
+    "/pages/fallback.html"
 ];
 
 self.addEventListener("install", (evt) => {
@@ -28,7 +30,7 @@ self.addEventListener("activate", (evt) => {
         caches.keys().then((keys) => {
             return Promise.all(
                 keys
-                    .filter((key) => key !== staticCacheName)
+                    .filter((key) => key !== staticCacheName && key !== dynamicCache)
                     .map((key) => caches.delete(key))
             );
         })
@@ -45,6 +47,6 @@ self.addEventListener("fetch", (evt) => {
                     return fetchRes;
                 })
             });
-        })
+        }).catch(() => caches.match(fallbackPath))
     );
 });
